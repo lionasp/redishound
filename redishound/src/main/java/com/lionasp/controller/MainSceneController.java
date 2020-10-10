@@ -20,25 +20,10 @@ public class MainSceneController {
     }
 
     public void onConnectButtonClicked() {
-        String port = portInput.getText();
-        if (port.equals("")) {
-            port = portInput.getPromptText();
-        }
-
-        String dbNumber = dbNumberInput.getText();
-        if (dbNumber.equals("")) {
-            dbNumber = dbNumberInput.getPromptText();
-        }
-
-        String hostname = hostnameInput.getText();
-        if (hostname.equals("")) {
-            hostname = hostnameInput.getPromptText();
-        }
-
         this.connector = new Connector(
-                hostname,
-                Integer.parseInt(port),
-                Integer.parseInt(dbNumber)
+                TextFieldGetter.getValueFromTextField(hostnameInput),
+                Integer.parseInt(TextFieldGetter.getValueFromTextField(portInput)),
+                Integer.parseInt(TextFieldGetter.getValueFromTextField(dbNumberInput))
         );
 
         try {
