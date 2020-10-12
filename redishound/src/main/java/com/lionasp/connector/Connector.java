@@ -2,6 +2,8 @@ package com.lionasp.connector;
 
 import redis.clients.jedis.Jedis;
 
+import java.util.Set;
+
 public class Connector {
     private String host = "localhost";
     private int port = 6379;
@@ -34,8 +36,16 @@ public class Connector {
         return getConnection().get(key);
     }
 
+    public void del(String key) {
+        getConnection().del(key);
+    }
+
     public String ping() {
         return getConnection().ping();
+    }
+
+    public Set<String> keys() {
+        return getConnection().keys("*");
     }
 
     private Jedis getConnection() {
