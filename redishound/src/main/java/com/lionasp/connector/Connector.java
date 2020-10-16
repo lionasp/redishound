@@ -1,5 +1,9 @@
 package com.lionasp.connector;
 
+import com.lionasp.connector.value.ListValue;
+import com.lionasp.connector.value.SetValue;
+import com.lionasp.connector.value.StringValue;
+import com.lionasp.connector.value.Value;
 import redis.clients.jedis.Jedis;
 
 import java.util.Set;
@@ -32,8 +36,21 @@ public class Connector {
         getConnection().set(key, value);
     }
 
-    public String get(String key) {
-        return getConnection().get(key);
+    public Value getValue(String key) {
+        // todo: validate key exists
+        String type = getConnection().type(key);
+        switch (type) {
+            case "string":
+                return new StringValue(getConnection().get(key));
+            case "set":
+                return new SetValue(getConnection().smembers(key));
+            case "list":
+                Long listLength = getConnection().llen(key);
+                return new ListValue(getConnection().lrange(key, 0, listLength));
+            default:
+                return null;
+        }
+
     }
 
     public void del(String key) {
