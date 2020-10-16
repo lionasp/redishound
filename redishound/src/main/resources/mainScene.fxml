@@ -3,23 +3,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lionasp.controller.MainSceneController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lionasp.controller.MainSceneController">
     <HBox>
         <Label style="-fx-padding: 5;">Hostname</Label>
-        <TextField fx:id="hostnameInput" promptText="localhost"/>
-        <Separator/>
+        <TextField fx:id="hostnameInput" promptText="localhost" />
+        <Separator />
         <Label style="-fx-padding: 5;">Port</Label>
-        <TextField fx:id="portInput" prefHeight="27.0" prefWidth="57.0" promptText="6379"/>
-        <Separator/>
+        <TextField fx:id="portInput" prefHeight="27.0" prefWidth="57.0" promptText="6379" />
+        <Separator />
         <Label style="-fx-padding: 5;">DB number</Label>
-        <TextField fx:id="dbNumberInput" prefHeight="27.0" prefWidth="57.0" promptText="0"/>
+        <TextField fx:id="dbNumberInput" prefHeight="27.0" prefWidth="57.0" promptText="0" />
     </HBox>
-    <Button layoutX="530.0" layoutY="1.0" mnemonicParsing="false" onAction="#onConnectButtonClicked" text="Connect"/>
-    <ListView fx:id="redisKeysListView" layoutX="14.0" layoutY="87.0" prefHeight="300.0" prefWidth="250.0"/>
-    <Button layoutX="241.0" layoutY="59.0" mnemonicParsing="false" onAction="#onDeleteKeyClicked"
-            text="-">
+    <Button layoutX="530.0" layoutY="1.0" mnemonicParsing="false" onAction="#onConnectButtonClicked" text="Connect" />
+    <ListView fx:id="redisKeysListView" layoutX="14.0" layoutY="87.0" prefHeight="300.0" prefWidth="250.0" />
+    <Button layoutX="241.0" layoutY="59.0" mnemonicParsing="false" onAction="#onDeleteKeyClicked" text="-">
         <tooltip><Tooltip text="Delete key" /></tooltip>
     </Button>
+   <TextArea wrapText="true" fx:id="redisValueContent" layoutX="287.0" layoutY="87.0" prefHeight="300.0" prefWidth="300.0" />
 
 </AnchorPane>
