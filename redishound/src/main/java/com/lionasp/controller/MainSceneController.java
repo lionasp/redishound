@@ -5,6 +5,7 @@ import com.lionasp.connector.value.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -26,6 +27,9 @@ public class MainSceneController {
 
     @FXML
     private TextArea redisValueContent;
+
+    @FXML
+    private Label statusBar;
 
     private Connector connector;
     private ObservableList<String> redisKeys = FXCollections.observableArrayList();
@@ -52,8 +56,10 @@ public class MainSceneController {
 
         try {
             System.out.println(this.connector.ping());
+            statusBar.setText("Successfully connected");
         } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
             System.out.println("Connection failed");
+            statusBar.setText("Connection failed");
             redisKeys.clear();
             return;
         }
@@ -64,10 +70,12 @@ public class MainSceneController {
     public void onDeleteKeyClicked() {
         String selectedKey = redisKeysListView.getSelectionModel().getSelectedItem();
         if (selectedKey == null) {
+            statusBar.setText("Chose key for delete it");
             return;
         }
         redisKeys.remove(selectedKey);
         connector.del(selectedKey);
+        statusBar.setText("Key \"" + selectedKey + "\" has deleted");
     }
 
     private void fillRedisKeysList() {
@@ -76,6 +84,7 @@ public class MainSceneController {
     }
 
     private void showValueContent(String key) {
+        clearStatusBar();
         if (!cache.containsKey(key)) {
             Value value = connector.getValue(key);
             if (value != null) {
@@ -86,7 +95,13 @@ public class MainSceneController {
         if (cache.containsKey(key)) {
             redisValueContent.setText(cache.get(key).toString());
         } else {
-            System.out.println("Can't read value for key: " + key);
+            String message = "Can't read value for key: " + key;
+            statusBar.setText(message);
+            System.out.println(message);
         }
+    }
+
+    private void clearStatusBar() {
+        statusBar.setText("");
     }
 }
