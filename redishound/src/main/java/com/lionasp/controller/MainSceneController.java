@@ -1,6 +1,7 @@
 package com.lionasp.controller;
 
 import com.lionasp.connector.Connector;
+import com.lionasp.connector.exceptions.ConnectorException;
 import com.lionasp.connector.value.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -57,7 +58,7 @@ public class MainSceneController {
         try {
             System.out.println(this.connector.ping());
             statusBar.setText("Successfully connected");
-        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+        } catch (ConnectorException e) {
             System.out.println("Connection failed");
             statusBar.setText("Connection failed");
             redisKeys.clear();
@@ -74,19 +75,38 @@ public class MainSceneController {
             return;
         }
         redisKeys.remove(selectedKey);
-        connector.del(selectedKey);
-        statusBar.setText("Key \"" + selectedKey + "\" has deleted");
+        try {
+            connector.del(selectedKey);
+            statusBar.setText("Key \"" + selectedKey + "\" has deleted");
+        } catch (ConnectorException e) {
+            String message = "Can't delete key " + selectedKey + " from DB";
+            statusBar.setText(message);
+            System.out.println(message);
+        }
+
     }
 
     private void fillRedisKeysList() {
         redisKeys.clear();
-        redisKeys.addAll(connector.keys());
+        try {
+            redisKeys.addAll(connector.keys());
+        } catch (ConnectorException e) {
+            String message = "Can't fetch keys from DB";
+            statusBar.setText(message);
+            System.out.println(message);
+        }
     }
 
     private void showValueContent(String key) {
         clearStatusBar();
         if (!cache.containsKey(key)) {
-            Value value = connector.getValue(key);
+            Value value;
+            try {
+                value = connector.getValue(key);
+            } catch (ConnectorException e) {
+                value = null;
+            }
+
             if (value != null) {
                 cache.put(key, value);
             }
