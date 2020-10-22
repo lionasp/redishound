@@ -1,5 +1,6 @@
 package com.lionasp.connector;
 
+import com.lionasp.connector.exceptions.ConnectorException;
 import com.lionasp.connector.value.ListValue;
 import com.lionasp.connector.value.SetValue;
 import com.lionasp.connector.value.StringValue;
@@ -32,13 +33,21 @@ public class Connector {
         this.dbNumber = dbNumber;
     }
 
-    public void set(String key, String value) {
-        getConnection().set(key, value);
+    public void set(String key, String value) throws ConnectorException {
+        try {
+            getConnection().set(key, value);
+        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            throw new ConnectorException(e);
+        }
     }
 
-    public Value getValue(String key) {
-        // todo: validate key exists
-        String type = getConnection().type(key);
+    public Value getValue(String key) throws ConnectorException {
+        String type;
+        try {
+             type = getConnection().type(key);
+        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            throw new ConnectorException(e);
+        }
         switch (type) {
             case "string":
                 return new StringValue(getConnection().get(key));
@@ -53,16 +62,28 @@ public class Connector {
 
     }
 
-    public void del(String key) {
-        getConnection().del(key);
+    public void del(String key) throws ConnectorException {
+        try {
+            getConnection().del(key);
+        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            throw new ConnectorException(e);
+        }
     }
 
-    public String ping() {
-        return getConnection().ping();
+    public String ping() throws ConnectorException {
+        try {
+            return getConnection().ping();
+        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            throw new ConnectorException(e);
+        }
     }
 
-    public Set<String> keys() {
-        return getConnection().keys("*");
+    public Set<String> keys() throws ConnectorException {
+        try {
+            return getConnection().keys("*");
+        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            throw new ConnectorException(e);
+        }
     }
 
     private Jedis getConnection() {

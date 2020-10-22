@@ -1,10 +1,12 @@
 package com.lionasp.controller;
 
 import com.lionasp.connector.Connector;
+import com.lionasp.connector.exceptions.ConnectorException;
 import com.lionasp.connector.value.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -26,6 +28,9 @@ public class MainSceneController {
 
     @FXML
     private TextArea redisValueContent;
+
+    @FXML
+    private Label statusBar;
 
     private Connector connector;
     private ObservableList<String> redisKeys = FXCollections.observableArrayList();
@@ -52,8 +57,10 @@ public class MainSceneController {
 
         try {
             System.out.println(this.connector.ping());
-        } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
+            statusBar.setText("Successfully connected");
+        } catch (ConnectorException e) {
             System.out.println("Connection failed");
+            statusBar.setText("Connection failed");
             redisKeys.clear();
             return;
         }
@@ -64,20 +71,42 @@ public class MainSceneController {
     public void onDeleteKeyClicked() {
         String selectedKey = redisKeysListView.getSelectionModel().getSelectedItem();
         if (selectedKey == null) {
+            statusBar.setText("Chose key for delete it");
             return;
         }
         redisKeys.remove(selectedKey);
-        connector.del(selectedKey);
+        try {
+            connector.del(selectedKey);
+            statusBar.setText("Key \"" + selectedKey + "\" has deleted");
+        } catch (ConnectorException e) {
+            String message = "Can't delete key " + selectedKey + " from DB";
+            statusBar.setText(message);
+            System.out.println(message);
+        }
+
     }
 
     private void fillRedisKeysList() {
         redisKeys.clear();
-        redisKeys.addAll(connector.keys());
+        try {
+            redisKeys.addAll(connector.keys());
+        } catch (ConnectorException e) {
+            String message = "Can't fetch keys from DB";
+            statusBar.setText(message);
+            System.out.println(message);
+        }
     }
 
     private void showValueContent(String key) {
+        clearStatusBar();
         if (!cache.containsKey(key)) {
-            Value value = connector.getValue(key);
+            Value value;
+            try {
+                value = connector.getValue(key);
+            } catch (ConnectorException e) {
+                value = null;
+            }
+
             if (value != null) {
                 cache.put(key, value);
             }
@@ -86,7 +115,13 @@ public class MainSceneController {
         if (cache.containsKey(key)) {
             redisValueContent.setText(cache.get(key).toString());
         } else {
-            System.out.println("Can't read value for key: " + key);
+            String message = "Can't read value for key: " + key;
+            statusBar.setText(message);
+            System.out.println(message);
         }
+    }
+
+    private void clearStatusBar() {
+        statusBar.setText("");
     }
 }
