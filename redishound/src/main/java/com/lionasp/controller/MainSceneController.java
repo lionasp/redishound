@@ -33,6 +33,7 @@ public class MainSceneController {
     private Label statusBar;
 
     private Connector connector;
+    private String selectedKey;
     private ObservableList<String> redisKeys = FXCollections.observableArrayList();
     private HashMap<String, Value> cache = new HashMap<>();
 
@@ -99,6 +100,7 @@ public class MainSceneController {
 
     private void showValueContent(String key) {
         clearStatusBar();
+        selectedKey = key;
         if (!cache.containsKey(key)) {
             Value value;
             try {
@@ -123,5 +125,15 @@ public class MainSceneController {
 
     private void clearStatusBar() {
         statusBar.setText("");
+    }
+
+    public void onRefreshKeyClicked() {
+        if (selectedKey == null) {
+            statusBar.setText("Select key first");
+        } else {
+            cache.remove(selectedKey);
+            showValueContent(selectedKey);
+            statusBar.setText("New value has been fetched");
+        }
     }
 }
