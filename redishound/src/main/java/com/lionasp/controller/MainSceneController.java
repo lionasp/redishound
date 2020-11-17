@@ -2,6 +2,7 @@ package com.lionasp.controller;
 
 import com.lionasp.connector.Connector;
 import com.lionasp.connector.exceptions.ConnectorException;
+import com.lionasp.connector.key.Key;
 import com.lionasp.connector.value.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +13,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 import java.util.HashMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MainSceneController {
     @FXML
@@ -24,7 +27,7 @@ public class MainSceneController {
     private TextField dbNumberInput;
 
     @FXML
-    private ListView<String> redisKeysListView;
+    private ListView<Key> redisKeysListView;
 
     @FXML
     private TextArea redisValueContent;
@@ -34,7 +37,7 @@ public class MainSceneController {
 
     private Connector connector;
     private String selectedKey;
-    private ObservableList<String> redisKeys = FXCollections.observableArrayList();
+    private ObservableList<Key> redisKeys = FXCollections.observableArrayList();
     private HashMap<String, Value> cache = new HashMap<>();
 
     public MainSceneController() {
@@ -46,7 +49,7 @@ public class MainSceneController {
         redisKeysListView.setItems(redisKeys);
 
         redisKeysListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showValueContent(newValue));
+                (observable, oldValue, newValue) -> showValueContent(newValue.toString()));
     }
 
     public void onConnectButtonClicked() {
@@ -70,12 +73,13 @@ public class MainSceneController {
     }
 
     public void onDeleteKeyClicked() {
-        String selectedKey = redisKeysListView.getSelectionModel().getSelectedItem();
+        String selectedKey = redisKeysListView.getSelectionModel().getSelectedItem().getName();
         if (selectedKey == null) {
             statusBar.setText("Chose key for delete it");
             return;
         }
-        redisKeys.remove(selectedKey);
+        deleteKey(selectedKey);
+
         try {
             connector.del(selectedKey);
             statusBar.setText("Key \"" + selectedKey + "\" has deleted");
@@ -87,10 +91,18 @@ public class MainSceneController {
 
     }
 
+    private void deleteKey(String key) {
+        Optional<Key> needed = redisKeys.stream()
+                .filter(item -> item.getName().equals(key)).findFirst();
+        needed.ifPresent(value -> redisKeys.remove(value));
+    }
+
     private void fillRedisKeysList() {
         redisKeys.clear();
         try {
-            redisKeys.addAll(connector.keys());
+            for (String rawKey : connector.keys()) {
+                redisKeys.add(new Key(rawKey));
+            }
         } catch (ConnectorException e) {
             String message = "Can't fetch keys from DB";
             statusBar.setText(message);
