@@ -49,7 +49,7 @@ public class MainSceneController {
         redisKeysListView.setItems(redisKeys);
 
         redisKeysListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> showValueContent(newValue.toString()));
+                (observable, oldValue, newValue) -> showValueContent(newValue == null ? "" : newValue.getName()));
     }
 
     public void onConnectButtonClicked() {
@@ -65,10 +65,11 @@ public class MainSceneController {
         } catch (ConnectorException e) {
             System.out.println("Connection failed");
             statusBar.setText("Connection failed");
-            redisKeys.clear();
             return;
+        } finally {
+            redisKeys.clear();
+            cache.clear();
         }
-
         fillRedisKeysList();
     }
 
@@ -82,7 +83,7 @@ public class MainSceneController {
 
         try {
             connector.del(selectedKey);
-            statusBar.setText("Key \"" + selectedKey + "\" has deleted");
+            statusBar.setText("Key \"" + selectedKey + "\" has been deleted");
         } catch (ConnectorException e) {
             String message = "Can't delete key " + selectedKey + " from DB";
             statusBar.setText(message);
@@ -95,6 +96,12 @@ public class MainSceneController {
         Optional<Key> needed = redisKeys.stream()
                 .filter(item -> item.getName().equals(key)).findFirst();
         needed.ifPresent(value -> redisKeys.remove(value));
+    }
+
+    private void updateKeyType(String key, String type) {
+        Optional<Key> needed = redisKeys.stream()
+                .filter(item -> item.getName().equals(key)).findFirst();
+        needed.ifPresent(value -> value.setType(type));
     }
 
     private void fillRedisKeysList() {
@@ -112,17 +119,27 @@ public class MainSceneController {
 
     private void showValueContent(String key) {
         clearStatusBar();
+        if (key.equals("")) {
+            redisValueContent.setText("");
+            selectedKey = null;
+            return;
+        }
+
         selectedKey = key;
         if (!cache.containsKey(key)) {
             Value value;
+            String type;
             try {
+                type = connector.getType(key);
                 value = connector.getValue(key);
             } catch (ConnectorException e) {
                 value = null;
+                type = null;
             }
 
             if (value != null) {
                 cache.put(key, value);
+                updateKeyType(key, type);
             }
         }
 

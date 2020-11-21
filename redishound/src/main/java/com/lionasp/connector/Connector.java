@@ -41,13 +41,16 @@ public class Connector {
         }
     }
 
-    public Value getValue(String key) throws ConnectorException {
-        String type;
+    public String getType(String key)  throws ConnectorException {
         try {
-             type = getConnection().type(key);
+            return getConnection().type(key);
         } catch (redis.clients.jedis.exceptions.JedisConnectionException | redis.clients.jedis.exceptions.JedisDataException e) {
             throw new ConnectorException(e);
         }
+    }
+
+    public Value getValue(String key) throws ConnectorException {
+        String type = getType(key);
         switch (type) {
             case "string":
                 return new StringValue(getConnection().get(key));
