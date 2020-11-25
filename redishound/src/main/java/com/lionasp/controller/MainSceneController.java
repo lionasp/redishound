@@ -156,7 +156,7 @@ public class MainSceneController {
         statusBar.setText("");
     }
 
-    public void onRefreshKeyClicked() {
+    public void onRefreshValueClicked() {
         if (selectedKey == null) {
             statusBar.setText("Select key first");
         } else {
@@ -164,5 +164,9 @@ public class MainSceneController {
             showValueContent(selectedKey);
             statusBar.setText("New value has been fetched");
         }
+    }
+
+    public void onRefreshKeysClicked() {
+
     }
 }
