@@ -167,6 +167,9 @@ public class MainSceneController {
     }
 
     public void onRefreshKeysClicked() {
-
+        this.selectedKey = null;
+        cache.clear();
+        this.fillRedisKeysList();
+        statusBar.setText("Keys have been fetched");
     }
 }

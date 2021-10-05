@@ -25,5 +25,7 @@
 
    <TextArea fx:id="redisValueContent" layoutX="287.0" layoutY="87.0" prefHeight="300.0" prefWidth="300.0" wrapText="true" />
    <Label fx:id="statusBar" layoutX="14.0" layoutY="394.0" />
-   <Button layoutX="14.0" layoutY="59.0" mnemonicParsing="false" onAction="#onRefreshKeysClicked" text="⟳" />
+   <Button layoutX="14.0" layoutY="59.0" mnemonicParsing="false" onAction="#onRefreshKeysClicked" text="⟳">
+    <tooltip><Tooltip text="Refresh keys" /></tooltip>
+   </Button>
 </AnchorPane>
