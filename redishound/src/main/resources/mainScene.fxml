@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lionasp.controller.MainSceneController">
+<AnchorPane prefHeight="425.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lionasp.controller.MainSceneController">
     <HBox>
         <Label style="-fx-padding: 5;">Hostname</Label>
         <TextField fx:id="hostnameInput" promptText="localhost" />
@@ -16,6 +16,9 @@
     </HBox>
     <Button layoutX="530.0" layoutY="1.0" mnemonicParsing="false" onAction="#onConnectButtonClicked" text="Connect" />
     <ListView fx:id="redisKeysListView" layoutX="14.0" layoutY="87.0" prefHeight="300.0" prefWidth="250.0" />
+    <Button layoutX="200.0" layoutY="59.0" mnemonicParsing="false" onAction="#onAddKeyClicked" text="+">
+        <tooltip><Tooltip text="Add key" /></tooltip>
+    </Button>
     <Button layoutX="241.0" layoutY="59.0" mnemonicParsing="false" onAction="#onDeleteKeyClicked" text="-">
         <tooltip><Tooltip text="Delete key" /></tooltip>
     </Button>
