@@ -6,15 +6,24 @@ import com.lionasp.connector.key.Key;
 import com.lionasp.connector.value.Value;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.io.Console;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class MainSceneController {
     @FXML
@@ -171,5 +180,43 @@ public class MainSceneController {
         cache.clear();
         this.fillRedisKeysList();
         statusBar.setText("Keys have been fetched");
+    }
+
+
+    public void onAddKeyClicked(ActionEvent event) throws IOException {
+        statusBar.setText("");
+        Stage dialog = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(
+                getClass().getResource("/addKeyScene.fxml")
+        );
+        Parent root = fxmlLoader.load();
+
+        AddKeySceneController childController = fxmlLoader.getController();
+        childController.setKeyCallback(response -> {
+            String key = response.getKey();
+            String value = response.getValue();
+
+            if (Objects.equals(key, "") || Objects.equals(value, "")) {
+                statusBar.setText("Key or value is empty");
+                return;
+            }
+
+            try {
+                connector.set(key, value);
+            } catch (ConnectorException e) {
+                statusBar.setText("Can't set the key");
+                return;
+            }
+
+            statusBar.setText("Key was set successfully");
+            this.fillRedisKeysList();
+
+        });
+
+        dialog.setScene(new Scene(root));
+        dialog.setTitle("Add new key");
+        dialog.initModality(Modality.WINDOW_MODAL);
+        dialog.initOwner(((Node)event.getSource()).getScene().getWindow());
+        dialog.show();
     }
 }

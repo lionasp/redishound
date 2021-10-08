@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.lionasp.controller.AddKeySceneController"
+            prefHeight="100.0" prefWidth="450.0">
+
+    <HBox>
+        <Label style="-fx-padding: 5;">Key</Label>
+        <TextField fx:id="keyInput" />
+        <Separator />
+        <Label style="-fx-padding: 5;">Value</Label>
+        <TextField fx:id="valueInput" />
+        <Separator />
+        <Button mnemonicParsing="false" onAction="#onAddKeyClicked" text="Add key" />
+    </HBox>
+</AnchorPane>
