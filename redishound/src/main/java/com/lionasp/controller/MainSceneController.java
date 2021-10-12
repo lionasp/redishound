@@ -196,11 +196,6 @@ public class MainSceneController {
             String key = response.getKey();
             String value = response.getValue();
 
-            if (Objects.equals(key, "") || Objects.equals(value, "")) {
-                statusBar.setText("Key or value is empty");
-                return;
-            }
-
             try {
                 connector.set(key, value);
             } catch (ConnectorException e) {
