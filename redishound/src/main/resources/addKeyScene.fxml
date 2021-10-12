@@ -15,6 +15,7 @@
         <Label style="-fx-padding: 5;">Value</Label>
         <TextField fx:id="valueInput" />
         <Separator />
-        <Button mnemonicParsing="false" onAction="#onAddKeyClicked" text="Add key" />
+        <Button fx:id="addKeyButton" mnemonicParsing="false" onAction="#onAddKeyClicked" text="Add key" />
     </HBox>
+    <Label fx:id="statusBar" layoutX="14.0" layoutY="90.0" />
 </AnchorPane>
