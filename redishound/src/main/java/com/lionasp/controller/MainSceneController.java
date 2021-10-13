@@ -74,6 +74,7 @@ public class MainSceneController {
         } catch (ConnectorException e) {
             System.out.println("Connection failed");
             statusBar.setText("Connection failed");
+            this.connector = null;
             return;
         } finally {
             redisKeys.clear();
@@ -83,9 +84,13 @@ public class MainSceneController {
     }
 
     public void onDeleteKeyClicked() {
+        if (!isConnectionSet()) {
+            return;
+        }
+
         String selectedKey = redisKeysListView.getSelectionModel().getSelectedItem().getName();
         if (selectedKey == null) {
-            statusBar.setText("Chose key for delete it");
+            statusBar.setText("Select a key to delete it");
             return;
         }
         deleteKey(selectedKey);
@@ -166,8 +171,12 @@ public class MainSceneController {
     }
 
     public void onRefreshValueClicked() {
+        if (!isConnectionSet()) {
+            return;
+        }
+
         if (selectedKey == null) {
-            statusBar.setText("Select key first");
+            statusBar.setText("Select a key first");
         } else {
             cache.remove(selectedKey);
             showValueContent(selectedKey);
@@ -176,6 +185,9 @@ public class MainSceneController {
     }
 
     public void onRefreshKeysClicked() {
+        if (!isConnectionSet()) {
+            return;
+        }
         this.selectedKey = null;
         cache.clear();
         this.fillRedisKeysList();
@@ -184,7 +196,10 @@ public class MainSceneController {
 
 
     public void onAddKeyClicked(ActionEvent event) throws IOException {
-        statusBar.setText("");
+        if (!isConnectionSet()) {
+            return;
+        }
+        clearStatusBar();
         Stage dialog = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(
                 getClass().getResource("/addKeyScene.fxml")
@@ -213,5 +228,14 @@ public class MainSceneController {
         dialog.initModality(Modality.WINDOW_MODAL);
         dialog.initOwner(((Node)event.getSource()).getScene().getWindow());
         dialog.show();
+    }
+
+
+    private boolean isConnectionSet() {
+        if (connector == null) {
+            statusBar.setText("Please, connect to a server before any other operation");
+            return false;
+        }
+        return true;
     }
 }
